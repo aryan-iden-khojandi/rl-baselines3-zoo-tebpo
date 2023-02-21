@@ -10,7 +10,7 @@ import torch as th  # noqa: F401
 import yaml
 from huggingface_hub import HfApi
 from huggingface_sb3 import EnvironmentName, ModelName
-from sb3_contrib import ARS, QRDQN, TQC, TRPO, RecurrentPPO
+from sb3_contrib import ARS, QRDQN, TQC, TRPO, TEBPO, TEBPO_MC, RecurrentPPO
 from stable_baselines3 import A2C, DDPG, DQN, PPO, SAC, TD3
 from stable_baselines3.common.callbacks import BaseCallback
 from stable_baselines3.common.env_util import make_vec_env
@@ -22,7 +22,7 @@ from torch import nn as nn  # noqa: F401 pylint: disable=unused-import
 
 ALGOS = {
     "a2c": A2C,
-    "ddpg": DDPG,
+ "ddpg": DDPG,
     "dqn": DQN,
     "ppo": PPO,
     "sac": SAC,
@@ -32,6 +32,8 @@ ALGOS = {
     "qrdqn": QRDQN,
     "tqc": TQC,
     "trpo": TRPO,
+    "tebpo": TEBPO,
+    "tebpo_mc": TEBPO_MC,
     "ppo_lstm": RecurrentPPO,
 }
 
