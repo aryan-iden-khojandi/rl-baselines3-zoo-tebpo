@@ -135,6 +135,11 @@ if __name__ == "__main__":  # noqa: C901
     )
     parser.add_argument("--wandb-project-name", type=str, default="sb3", help="the wandb's project name")
     parser.add_argument("--wandb-entity", type=str, default=None, help="the entity (team) of wandb's project")
+    parser.add_argument("--init-policy-file", type=str, default=None, help="the path and filename pointing to an"
+                                                                          "initialization model to ensure consistency"
+                                                                          "across different algorithms in analysis")
+    parser.add_argument("--fixed-policy-file", type=str, default=None, help="the path and filename pointing to a fixed"
+                                                                           "model, to be used in analysis")
     args = parser.parse_args()
 
     # Going through custom gym packages to let them register in the global registory
@@ -229,6 +234,8 @@ if __name__ == "__main__":  # noqa: C901
         no_optim_plots=args.no_optim_plots,
         device=args.device,
         yaml_file=args.yaml_file,
+        init_policy_file=args.init_policy_file,
+        fixed_policy_file=args.fixed_policy_file
     )
 
     # Prepare experiment and launch hyperparameter optimization if needed

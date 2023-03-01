@@ -94,6 +94,8 @@ class ExperimentManager:
         no_optim_plots: bool = False,
         device: Union[th.device, str] = "auto",
         yaml_file: Optional[str] = None,
+        init_policy_file: Optional[str] = None,
+        fixed_policy_file: Optional[str] = None
     ):
         super().__init__()
         self.algo = algo
@@ -164,6 +166,9 @@ class ExperimentManager:
         )
         self.params_path = f"{self.save_path}/{self.env_name}"
 
+        self.init_policy_file = init_policy_file
+        self.fixed_policy_file = fixed_policy_file
+
     def setup_experiment(self) -> Optional[Tuple[BaseAlgorithm, Dict[str, Any]]]:
         """
         Read hyperparameters, pre-process them (create schedules, wrappers, callbacks, action noise objects)
@@ -182,6 +187,11 @@ class ExperimentManager:
         env = self.create_envs(n_envs, no_log=False)
 
         self._hyperparams = self._preprocess_action_noise(hyperparams, saved_hyperparams, env)
+
+        if self.init_policy_file:
+            self._hyperparams['init_policy_file'] = self.init_policy_file
+        if self.fixed_policy_file:
+            self._hyperparams['fixed_policy_file'] = self.fixed_policy_file
 
         if self.continue_training:
             model = self._load_pretrained_agent(self._hyperparams, env)
