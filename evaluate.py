@@ -246,9 +246,9 @@ if __name__ == "__main__":  # noqa: C901
     # Prepare experiment and launch hyperparameter optimization if needed
     results = exp_manager.setup_experiment()
     model, saved_hyperparams = results
-    # with open('/Users/aryan.iden.khojandi/repos/rl-baselines3-zoo-tebpo/saved_models_eval_mode/saved_model_{}'.format(
-    #         model.__class__.__name__), 'wb') as f:
-    #     pickle.dump(model.policy, f)
+    with open('saved_models_eval_mode/saved_model_{}'.format(
+            model.__class__.__name__), 'wb') as f:
+        pickle.dump(model.policy, f)
 
     n_evals = 100 if args.n_evaluations is None else args.n_evaluations
 
