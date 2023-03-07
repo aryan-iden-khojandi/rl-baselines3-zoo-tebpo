@@ -4,6 +4,7 @@ import importlib
 import os
 import time
 import uuid
+import pickle
 
 import gym
 import numpy as np
