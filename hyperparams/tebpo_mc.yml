@@ -129,6 +129,11 @@ HalfCheetah-v3:
 # Tuned
 Hopper-v3:
   <<: *mujoco-defaults
+# Note Tuned
+Hopper-v4:
+  <<: *mujoco-defaults
+  n_timesteps: !!float 1e4
+#  terminate_when_unhealthy: False
 # Tuned
 Walker2d-v3:
   <<: *mujoco-defaults
