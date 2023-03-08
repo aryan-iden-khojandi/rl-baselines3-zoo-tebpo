@@ -149,7 +149,7 @@ if __name__ == "__main__":  # noqa: C901
         importlib.import_module(env_module)
 
     env_id = args.env
-    registered_envs = set(gym.envs.registry.env_specs.keys())  # pytype: disable=module-attr
+    registered_envs = set(gym.envs.registry.keys())  # pytype: disable=module-attr
 
     # If the environment is not found, suggest the closest match
     if env_id not in registered_envs:
@@ -248,6 +248,9 @@ if __name__ == "__main__":  # noqa: C901
         pickle.dump(model.policy, f)
 
     n_evals = 100 if args.n_evaluations is None else args.n_evaluations
+
+    from gym.wrappers import TimeLimit
+    # model.env.spec = None
     mean, sd = evaluate_policy(model, model.env, n_eval_episodes=n_evals)
     print(f"{mean=}")
     print(f"{sd / np.sqrt(n_evals)=}")
