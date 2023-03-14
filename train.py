@@ -141,6 +141,7 @@ if __name__ == "__main__":  # noqa: C901
                                                                           "across different algorithms in analysis")
     parser.add_argument("--fixed-policy-file", type=str, default=None, help="the path and filename pointing to a fixed"
                                                                            "model, to be used in analysis")
+    parser.add_argument("--experiment-index", type=int, default=None)
     args = parser.parse_args()
 
     # Going through custom gym packages to let them register in the global registory
@@ -236,7 +237,8 @@ if __name__ == "__main__":  # noqa: C901
         device=args.device,
         yaml_file=args.yaml_file,
         init_policy_file=args.init_policy_file,
-        fixed_policy_file=args.fixed_policy_file
+        fixed_policy_file=args.fixed_policy_file,
+        experiment_index=args.experiment_index
     )
 
     # Prepare experiment and launch hyperparameter optimization if needed

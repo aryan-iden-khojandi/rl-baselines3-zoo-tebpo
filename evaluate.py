@@ -5,6 +5,7 @@ import os
 import time
 import uuid
 import pickle
+import csv, time
 
 import gym
 import numpy as np
@@ -142,6 +143,7 @@ if __name__ == "__main__":  # noqa: C901
                                                                           "across different algorithms in analysis")
     parser.add_argument("--fixed-policy-file", type=str, default=None, help="the path and filename pointing to a fixed"
                                                                            "model, to be used in analysis")
+    parser.add_argument("--experiment-index", type=int, default=None)
     args = parser.parse_args()
 
     # Going through custom gym packages to let them register in the global registory
@@ -237,21 +239,35 @@ if __name__ == "__main__":  # noqa: C901
         device=args.device,
         yaml_file=args.yaml_file,
         init_policy_file=args.init_policy_file,
-        fixed_policy_file=args.fixed_policy_file
+        fixed_policy_file=args.fixed_policy_file,
+        experiment_index=args.experiment_index
     )
 
     # Prepare experiment and launch hyperparameter optimization if needed
     results = exp_manager.setup_experiment()
     model, saved_hyperparams = results
-    with open('/Users/aryan.iden.khojandi/repos/rl-baselines3-zoo-tebpo/saved_models_eval_mode/saved_model_{}'.format(
-            model.__class__.__name__), 'wb') as f:
-        pickle.dump(model.policy, f)
+    # with open('/Users/aryan.iden.khojandi/repos/rl-baselines3-zoo-tebpo/saved_models_eval_mode/saved_model_{}'.format(
+    #         model.__class__.__name__), 'wb') as f:
+    #     pickle.dump(model.policy, f)
 
     n_evals = 100 if args.n_evaluations is None else args.n_evaluations
 
     from gym.wrappers import TimeLimit
     # model.env.spec = None
     mean, sd = evaluate_policy(model, model.env, n_eval_episodes=n_evals)
+
+    filename = "experimental_results/{exp_idx}/evaluation_{timestamp}".format(exp_idx=args.experiment_index,
+                                                                              timestamp=time.time())
+
+    with open(filename, 'w') as f:
+        writer = csv.writer(f, delimiter=',')
+
+        row_mean = ['mean', mean]
+        writer.writerow(row_mean)
+
+        row_stderr = ['stderr', sd / np.sqrt(n_evals)]
+        writer.writerow(row_stderr)
+
     print(f"{mean=}")
     print(f"{sd / np.sqrt(n_evals)=}")
 

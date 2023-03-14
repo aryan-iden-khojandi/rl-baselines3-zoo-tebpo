@@ -95,7 +95,8 @@ class ExperimentManager:
         device: Union[th.device, str] = "auto",
         yaml_file: Optional[str] = None,
         init_policy_file: Optional[str] = None,
-        fixed_policy_file: Optional[str] = None
+        fixed_policy_file: Optional[str] = None,
+        experiment_index: Optional[str] = None
     ):
         super().__init__()
         self.algo = algo
@@ -168,6 +169,9 @@ class ExperimentManager:
 
         self.init_policy_file = init_policy_file
         self.fixed_policy_file = fixed_policy_file
+        self.experiment_index = experiment_index
+
+        print("env_kwargs: {}".format(self.env_kwargs))
 
     def setup_experiment(self) -> Optional[Tuple[BaseAlgorithm, Dict[str, Any]]]:
         """
@@ -192,6 +196,8 @@ class ExperimentManager:
             self._hyperparams['init_policy_file'] = self.init_policy_file
         if self.fixed_policy_file:
             self._hyperparams['fixed_policy_file'] = self.fixed_policy_file
+        if self.experiment_index is not None:
+            self._hyperparams['experiment_index'] = self.experiment_index
 
         if self.continue_training:
             model = self._load_pretrained_agent(self._hyperparams, env)

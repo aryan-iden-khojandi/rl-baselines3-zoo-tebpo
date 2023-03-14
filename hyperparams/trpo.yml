@@ -135,7 +135,8 @@ Hopper-v4:
   <<: *mujoco-defaults
   n_timesteps: !!float 1e5
   gamma: 1.0
-#  terminate_when_unhealthy: False
+  gae_lambda: 1.0
+  normalize_advantage: False
 # Tuned
 Walker2d-v3:
   <<: *mujoco-defaults
