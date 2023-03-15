@@ -3,10 +3,10 @@ from gym.envs.registration import register
 
 from utils.wrappers import MaskVelocityWrapper
 
-try:
-    import pybullet_envs  # pytype: disable=import-error
-except ImportError:
-    pybullet_envs = None
+# try:
+#     import pybullet_envs  # pytype: disable=import-error
+# except ImportError:
+#     pybullet_envs = None
 
 try:
     import highway_env  # pytype: disable=import-error
