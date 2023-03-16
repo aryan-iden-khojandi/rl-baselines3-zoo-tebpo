@@ -251,6 +251,7 @@ if __name__ == "__main__":  # noqa: C901
             model.__class__.__name__), 'wb') as f:
         pickle.dump(model.policy, f)
 
+    mean, sd = evaluate_policy(model, model.env, n_eval_episodes=n_evals, deterministic=False)
 
     with (open(args.output, 'w')
           if args.output is not None
