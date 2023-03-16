@@ -6,6 +6,7 @@ import time
 import uuid
 import pickle
 import csv, time
+import sys
 
 import gym
 import numpy as np
@@ -108,6 +109,7 @@ if __name__ == "__main__":  # noqa: C901
     )
     parser.add_argument("--study-name", help="Study name for distributed optimization", type=str, default=None)
     parser.add_argument("--verbose", help="Verbose mode (0: no output, 1: INFO)", default=1, type=int)
+    parser.add_argument("--output", help="Name of output file", type=str)
     parser.add_argument(
         "--gym-packages",
         type=str,
