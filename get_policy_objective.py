@@ -1,4 +1,6 @@
 import argparse
+import pathlib
+import pickle as pkl
 import difflib
 import importlib
 import os
@@ -7,10 +9,12 @@ import uuid
 import pickle
 import csv, time
 import sys
+import pandas as pd
 
 import gym
 import numpy as np
 import seaborn
+from stable_baselines3.common.callbacks import BaseCallback, CallbackList
 import torch as th
 from stable_baselines3.common.utils import set_random_seed
 from stable_baselines3.common.evaluation import evaluate_policy
@@ -52,6 +56,7 @@ if __name__ == "__main__":  # noqa: C901
         type=str,
     )
     parser.add_argument("--eval-episodes", help="Number of episodes to use for evaluation", default=5, type=int)
+    parser.add_argument("--eval-policies", help="Pkl filenames containing policies to evaluate", nargs="*")
     parser.add_argument("--n-eval-envs", help="Number of environments for evaluation", default=1, type=int)
     parser.add_argument("--save-freq", help="Save the model every n steps (if negative, no checkpoint)", default=-1, type=int)
     parser.add_argument(
@@ -102,7 +107,7 @@ if __name__ == "__main__":  # noqa: C901
         help="Training policies are evaluated every n-timesteps // n-evaluations steps when doing hyperparameter optimization."
         "Default is 1 evaluation per 100k timesteps.",
         type=int,
-        default=100,
+        default=None,
     )
     parser.add_argument(
         "--storage", help="Database storage path if distributed optimization should be used", type=str, default=None
@@ -241,21 +246,30 @@ if __name__ == "__main__":  # noqa: C901
         device=args.device,
         yaml_file=args.yaml_file,
         init_policy_file=args.init_policy_file,
-        fixed_policy_file=args.fixed_policy_file,
     )
 
     # Prepare experiment and launch hyperparameter optimization if needed
     results = exp_manager.setup_experiment()
     model, saved_hyperparams = results
-    with open('saved_models_eval_mode/saved_model_{}'.format(
-            model.__class__.__name__), 'wb') as f:
-        pickle.dump(model.policy, f)
+    model._last_obs = model.env.reset()
+    # dummy_callback = CallbackList([])
+    total_timesteps, callback = model._setup_learn(
+        args.n_timesteps, eval_env=None,
+        eval_freq=1e12, reset_num_timesteps=True)
+    model.collect_rollouts(
+        model.env, callback, model.rollout_buffer,
+        n_rollout_steps=args.n_timesteps
+    )
+    obj_and_kl = model.get_objective_and_kl_fn(
+        model.policy, model.rollout_buffer)
 
-    mean, sd = evaluate_policy(model, model.env, n_eval_episodes=args.n_evaluations, deterministic=False)
+    def eval_fname(fname):
+        with open(fname, "rb") as file:
+            eval_policy = pkl.load(file)
+            obj, kl = obj_and_kl(eval_policy)
+        return dict(policy=fname, obj=obj.item(), kl=kl.item())
 
-    with (open(args.output, 'w')
-          if args.output is not None
-          else sys.stdout) as f:
-        writer = csv.DictWriter(f, delimiter=',', fieldnames=["mean", "sd", "n"])
-        writer.writeheader()
-        writer.writerow(dict(mean=mean, sd=sd, n=args.n_evaluations))
+    df = pd.DataFrame.from_dict([eval_fname(fname)
+                                 for fname in args.eval_policies])
+    output = sys.stdout if args.output is None else args.output
+    df.to_csv(output, index=False)
