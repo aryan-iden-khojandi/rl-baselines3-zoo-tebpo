@@ -102,7 +102,7 @@ if __name__ == "__main__":  # noqa: C901
         help="Training policies are evaluated every n-timesteps // n-evaluations steps when doing hyperparameter optimization."
         "Default is 1 evaluation per 100k timesteps.",
         type=int,
-        default=None,
+        default=100,
     )
     parser.add_argument(
         "--storage", help="Database storage path if distributed optimization should be used", type=str, default=None
@@ -242,7 +242,6 @@ if __name__ == "__main__":  # noqa: C901
         yaml_file=args.yaml_file,
         init_policy_file=args.init_policy_file,
         fixed_policy_file=args.fixed_policy_file,
-        experiment_index=args.experiment_index
     )
 
     # Prepare experiment and launch hyperparameter optimization if needed
@@ -252,24 +251,10 @@ if __name__ == "__main__":  # noqa: C901
             model.__class__.__name__), 'wb') as f:
         pickle.dump(model.policy, f)
 
-    n_evals = 100 if args.n_evaluations is None else args.n_evaluations
 
-    from gym.wrappers import TimeLimit
-    # model.env.spec = None
-    mean, sd = evaluate_policy(model, model.env, n_eval_episodes=n_evals)
-
-    filename = "experimental_results/{exp_idx}/evaluation_{timestamp}".format(exp_idx=args.experiment_index,
-                                                                              timestamp=time.time())
-
-    with open(filename, 'w') as f:
-        writer = csv.writer(f, delimiter=',')
-
-        row_mean = ['mean', mean]
-        writer.writerow(row_mean)
-
-        row_stderr = ['stderr', sd / np.sqrt(n_evals)]
-        writer.writerow(row_stderr)
-
-    print(f"{mean=}")
-    print(f"{sd / np.sqrt(n_evals)=}")
-
+    with (open(args.output, 'w')
+          if args.output is not None
+          else sys.stdout) as f:
+        writer = csv.DictWriter(f, delimiter=',', fieldnames=["mean", "sd", "n"])
+        writer.writeheader()
+        writer.writerow(dict(mean=mean, sd=sd, n=n_evals))
