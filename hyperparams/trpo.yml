@@ -11,6 +11,18 @@ CartPole-v1:
   learning_rate: !!float 1e-3
   n_critic_updates: 20
 
+CartPoleIncentive-v1:
+  n_envs: 2
+  n_timesteps: !!float 1e5
+  policy: 'MlpPolicy'
+  n_steps: 512
+  batch_size: 512
+  cg_damping: !!float 1e-3
+  gae_lambda: 0.98
+  gamma: 0.99
+  learning_rate: !!float 1e-3
+  n_critic_updates: 20
+
 # Tuned
 Pendulum-v1:
   n_envs: 2

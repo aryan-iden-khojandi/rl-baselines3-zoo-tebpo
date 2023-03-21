@@ -13,6 +13,7 @@ import torch as th
 from stable_baselines3.common.utils import set_random_seed
 
 # Register custom envs
+from gym.envs.registration import register
 import utils.import_envs  # noqa: F401 pytype: disable=import-error
 from utils.exp_manager import ExperimentManager
 from utils.utils import ALGOS, StoreDict
@@ -148,6 +149,10 @@ if __name__ == "__main__":  # noqa: C901
     for env_module in args.gym_packages:
         importlib.import_module(env_module)
 
+    #### TEMPORARY: MOVE TO APPROPRIATE LOCATION LATER ####
+    register(id="CartPoleIncentive-v1",
+             entry_point="stable_baselines3.common.envs.cartpole_incentive:CartPoleIncentiveEnv", max_episode_steps=500)
+    #######################################################
     env_id = args.env
     registered_envs = set(gym.envs.registry.env_specs)  # pytype: disable=module-attr
 
