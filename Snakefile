@@ -1,7 +1,8 @@
 n_evals = 1000
 n_steps = 10000
 lams = [0.5, 0.9, 0.97, 0.98, 0.99, 1.]
-envs = ["LunarLander-v2"]
+# envs = ["LunarLander-v2"]
+envs = ["CartPoleIncentive-v1"]
 
 eval_targets = expand("results/{env}/seed-{seed}/{eval_type}-{lam}.csv",
                  # eval_type=["evaluation", "policy_objective"],
@@ -12,7 +13,7 @@ eval_targets = expand("results/{env}/seed-{seed}/{eval_type}-{lam}.csv",
 
 obj_targets = expand("results/{env}/seed-{seed}/policy_objective-{algo}.csv",
                         # eval_type=["evaluation", "policy_objective"],
-                        algo=["trpo", "tebpo_trpo", "tebpo_mc"],
+                        algo=["trpo", "tebpo_mc"],
                         env=envs,
                         seed=range(10))
 

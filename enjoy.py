@@ -182,7 +182,6 @@ def main():  # noqa: C901
         }
 
     model = ALGOS[algo].load(model_path, env=env, custom_objects=custom_objects, device=args.device, **kwargs)
-
     obs = env.reset()
 
     # Deterministic by default except for atari games
