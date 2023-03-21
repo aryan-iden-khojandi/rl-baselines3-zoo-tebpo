@@ -251,7 +251,12 @@ if __name__ == "__main__":  # noqa: C901
             model.__class__.__name__), 'wb') as f:
         pickle.dump(model.policy, f)
 
-    mean, sd = evaluate_policy(model, model.env, n_eval_episodes=args.n_evaluations, deterministic=False)
+    if "CartPole" in env_id:
+        episode_rewards, episode_lengths = evaluate_policy(model, model.env, n_eval_episodes=args.n_evaluations,
+                                                           deterministic=False, return_episode_rewards=True)
+        mean, sd = np.mean(episode_lengths), np.std(episode_lengths)
+    else:
+        mean, sd = evaluate_policy(model, model.env, n_eval_episodes=args.n_evaluations, deterministic=False)
 
     with (open(args.output, 'w')
           if args.output is not None
