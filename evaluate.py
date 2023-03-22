@@ -251,10 +251,11 @@ if __name__ == "__main__":  # noqa: C901
             model.__class__.__name__), 'wb') as f:
         pickle.dump(model.policy, f)
 
-    use_original_rewards = True
+    use_original_rewards = False
     if "CartPole" in env_id and use_original_rewards:
         episode_rewards, episode_lengths = evaluate_policy(model, model.env, n_eval_episodes=args.n_evaluations,
                                                            deterministic=False, return_episode_rewards=True)
+        # Persist both rewards and episode lengths, in all cases?
         mean, sd = np.mean(episode_lengths), np.std(episode_lengths)
     else:
         mean, sd = evaluate_policy(model, model.env, n_eval_episodes=args.n_evaluations, deterministic=False)
