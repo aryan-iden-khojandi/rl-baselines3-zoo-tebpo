@@ -76,9 +76,11 @@ if __name__ == "__main__":
 
     algos = ["trpo", "tebpo_mc"]
     lams = [0.5, 0.9, 0.97, 0.98, 0.99, 1.]
+    # lams = [0.5, 0.8, 0.825, 0.85, 0.9, 1.]
     seeds = range(10)
 
-    df_policy_objective, df_eval = create_result_dataframes(algos, lams, seeds)
+    df_policy_objective, df_eval = create_result_dataframes(algos, lams, seeds,
+                                                            results_path='results/CartPole-v1')
 
     # For each (policy, lam) pair, look at the distribution across seeds to get mean and standard deviation
     df_policy_objective_means = df_policy_objective.groupby(['algo', 'policy'])['obj'].mean().rename('obj_mean')
@@ -91,7 +93,7 @@ if __name__ == "__main__":
 
     df_eval_summary = pd.concat([df_eval_means, df_eval_stds], axis=1)
     reference_policy_eval_mean = df_eval_summary.query('lam == 1.0')['eval_mean'].tolist()[0]
-    df_eval_summary['obj_improvement'] = reference_policy_eval_mean - df_eval_summary['eval_mean']
+    df_eval_summary['obj_improvement'] = df_eval_summary['eval_mean'] - reference_policy_eval_mean
 
     print(df_policy_objective_summary)
     print(df_eval_summary)
